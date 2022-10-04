@@ -79,7 +79,7 @@ static int call_decryption(char *name_device) {
     char *data = read_file(path);
 
     char *argv[] = {
-        "/home/lgleba/Desktop/courseWork-OS-main/code/crypto",
+        "/home/lgleba/Desktop/kernel-module-linux/crypto",
         data,
         NULL };
 
@@ -101,7 +101,7 @@ static int call_decryption(char *name_device) {
 static int call_encryption(void) {
     printk(KERN_INFO "USB MODULE: Call_encrypt\n");
     char *argv[] = {
-        "/home/lgleba/Desktop/courseWork-OS-main/code/crypto",
+        "/home/lgleba/Desktop/kernel-module-linux/crypto",
         NULL };
 
     static char *envp[] = {
