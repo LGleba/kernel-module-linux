@@ -24,8 +24,7 @@ MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Lisichkin Gleb");
 
 // Read password from USB device
-static char *read_file(char *filename)
-{
+static char *read_file(char *filename) {
     struct kstat *stat;
     struct file *fp;
     mm_segment_t fs;
@@ -34,8 +33,7 @@ static char *read_file(char *filename)
     int size;
 
     fp = filp_open(filename, O_RDWR, 0644);
-    if (IS_ERR(fp))
-    {
+    if (IS_ERR(fp)) {
         return NULL;
     }
 
@@ -43,8 +41,7 @@ static char *read_file(char *filename)
     set_fs(KERNEL_DS);
     
     stat = (struct kstat *)kmalloc(sizeof(struct kstat), GFP_KERNEL);
-    if (!stat)
-    {
+    if (!stat) {
         return NULL;
     }
 
@@ -52,8 +49,7 @@ static char *read_file(char *filename)
     size = stat->size;
 
     buf = kmalloc(size, GFP_KERNEL);
-    if (!buf) 
-    {
+    if (!buf) {
         kfree(stat);
         return NULL;
     }
@@ -89,8 +85,7 @@ static int call_decryption(char *name_device) {
         "PATH=/sbin:/bin:/usr/sbin:/usr/bin", 
         NULL };
 
-    if (call_usermodehelper(argv[0], argv, envp, UMH_WAIT_PROC) < 0) 
-    {
+    if (call_usermodehelper(argv[0], argv, envp, UMH_WAIT_PROC) < 0) {
         return -1;
     }
 
@@ -110,8 +105,7 @@ static int call_encryption(void) {
         "PATH=/sbin:/bin:/usr/sbin:/usr/bin", 
         NULL };
 
-    if (call_usermodehelper(argv[0], argv, envp, UMH_WAIT_PROC) < 0) 
-    {
+    if (call_usermodehelper(argv[0], argv, envp, UMH_WAIT_PROC) < 0) {
         return -1;
     }
 
@@ -128,8 +122,7 @@ typedef struct our_usb_device {
 LIST_HEAD(connected_devices);
 
 // Match device with device id.
-static bool device_match_device_id(struct usb_device *dev, const struct usb_device_id *dev_id)
-{
+static bool device_match_device_id(struct usb_device *dev, const struct usb_device_id *dev_id) {
     // Check idVendor and idProduct, which are used.
     if (dev_id->idVendor != dev->descriptor.idVendor)
         return false;
@@ -139,8 +132,7 @@ static bool device_match_device_id(struct usb_device *dev, const struct usb_devi
 }
 
 // Match device id with device id.
-static bool device_id_match_device_id(struct usb_device_id *new_dev_id, const struct usb_device_id *dev_id)
-{
+static bool device_id_match_device_id(struct usb_device_id *new_dev_id, const struct usb_device_id *dev_id) {
     // Check idVendor and idProduct, which are used.
     if (dev_id->idVendor != new_dev_id->idVendor)
         return false;
@@ -150,8 +142,7 @@ static bool device_id_match_device_id(struct usb_device_id *new_dev_id, const st
 }
 
 // Check our list of devices, if we know device.
-static char *usb_device_id_is_known(struct usb_device_id *dev)
-{
+static char *usb_device_id_is_known(struct usb_device_id *dev) {
     unsigned long known_devices_len = sizeof(known_devices) / sizeof(known_devices[0]);
     int i = 0;
     for (i = 0; i < known_devices_len; i++)
@@ -171,8 +162,7 @@ static char *usb_device_id_is_known(struct usb_device_id *dev)
     return NULL;
 }
 
-static char *knowing_device(void)
-{
+static char *knowing_device(void) {
     our_usb_device_t *temp;
     int count = 0;
     char *name;
@@ -188,14 +178,14 @@ static char *knowing_device(void)
     return name;
 }
 
-static void print_our_usb_devices(void)
-{
-    our_usb_device_t *temp;
-    int count = 0;
-    list_for_each_entry(temp, &connected_devices, list_node) {
-        printk(KERN_INFO "USB MODULE: Node %d data = %x:%x\n", count++, temp->dev_id.idVendor, temp->dev_id.idProduct);
-    }
-}
+// static void print_our_usb_devices(void)
+// {
+//     our_usb_device_t *temp;
+//     int count = 0;
+//     list_for_each_entry(temp, &connected_devices, list_node) {
+//         printk(KERN_INFO "USB MODULE: Node %d data = %x:%x\n", count++, temp->dev_id.idVendor, temp->dev_id.idProduct);
+//     }
+// }
 
 static void add_our_usb_device(struct usb_device *dev)
 {
@@ -266,16 +256,15 @@ static void usb_dev_remove(struct usb_device *dev)
 static int notify(struct notifier_block *self, unsigned long action, void *dev)
 {
     // Events, which our notifier react.
-    switch (action) 
-    {
-        case USB_DEVICE_ADD:
-            usb_dev_insert(dev);
-	        break;
-        case USB_DEVICE_REMOVE:
-            usb_dev_remove(dev);
-	        break;
-        default:
-	        break;
+    switch (action) {
+    case USB_DEVICE_ADD:
+        usb_dev_insert(dev);
+        break;
+    case USB_DEVICE_REMOVE:
+        usb_dev_remove(dev);
+        break;
+    default:
+        break;
     }
     return 0;
 }
@@ -285,20 +274,19 @@ static struct notifier_block usb_notify = {
     .notifier_call = notify,
 };
 
-static int __init my_module_init(void)
-{
+
+static int __init my_module_init(void) {
     usb_register_notify(&usb_notify);
     call_encryption();
-    printk(KERN_INFO "USB MODULE: loaded.\n");
+    printk(KERN_INFO "USB MODULE: is loaded.\n");
     return 0;
 }
-
-static void __exit my_module_exit(void)
-{
+static void __exit my_module_exit(void) {
     usb_unregister_notify(&usb_notify);
     call_encryption();
-    printk(KERN_INFO "USB MODULE: unloaded.\n");
+    printk(KERN_INFO "USB MODULE: is unloaded.\n");
 }
+
 
 module_init(my_module_init);
 module_exit(my_module_exit);
