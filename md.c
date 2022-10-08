@@ -208,11 +208,35 @@ static void delete_our_usb_device(struct usb_device *dev)
     }
 }
 
+static void print_usb_device(struct usb_device *some_usb_device) {
+    printk(KERN_INFO "USB MODULE print_usb_device(): some_usb_device->product      = %s\n", some_usb_device->product);
+    printk(KERN_INFO "USB MODULE print_usb_device(): some_usb_device->manufacturer = %s\n", some_usb_device->manufacturer);
+    printk(KERN_INFO "USB MODULE print_usb_device(): some_usb_device->serial       = %s\n", some_usb_device->serial);
+    
+    printk(KERN_INFO "USB MODULE print_usb_device(): some_usb_device->descriptor.bLength            = %d\n", some_usb_device->descriptor.bLength);
+    printk(KERN_INFO "USB MODULE print_usb_device(): some_usb_device->descriptor.bDescriptorType    = %d\n", some_usb_device->descriptor.bDescriptorType);
+    printk(KERN_INFO "USB MODULE print_usb_device(): some_usb_device->descriptor.bcdUSB             = %x\n", some_usb_device->descriptor.bcdUSB);
+    printk(KERN_INFO "USB MODULE print_usb_device(): some_usb_device->descriptor.bDeviceClass       = %d\n", some_usb_device->descriptor.bDeviceClass);
+    printk(KERN_INFO "USB MODULE print_usb_device(): some_usb_device->descriptor.bDeviceSubClass    = %d\n", some_usb_device->descriptor.bDeviceSubClass);
+    printk(KERN_INFO "USB MODULE print_usb_device(): some_usb_device->descriptor.bDeviceProtocol    = %d\n", some_usb_device->descriptor.bDeviceProtocol);
+    printk(KERN_INFO "USB MODULE print_usb_device(): some_usb_device->descriptor.bMaxPacketSize0    = %d\n", some_usb_device->descriptor.bMaxPacketSize0);
+    printk(KERN_INFO "USB MODULE print_usb_device(): some_usb_device->descriptor.idVendor           = %x\n", some_usb_device->descriptor.idVendor);
+    printk(KERN_INFO "USB MODULE print_usb_device(): some_usb_device->descriptor.idProduct          = %x\n", some_usb_device->descriptor.idProduct);
+    printk(KERN_INFO "USB MODULE print_usb_device(): some_usb_device->descriptor.bcdDevice          = %x\n", some_usb_device->descriptor.bcdDevice);
+    printk(KERN_INFO "USB MODULE print_usb_device(): some_usb_device->descriptor.iManufacturer      = %d\n", some_usb_device->descriptor.iManufacturer);
+    printk(KERN_INFO "USB MODULE print_usb_device(): some_usb_device->descriptor.iProduct           = %d\n", some_usb_device->descriptor.iProduct);
+    printk(KERN_INFO "USB MODULE print_usb_device(): some_usb_device->descriptor.iSerialNumber      = %d\n", some_usb_device->descriptor.iSerialNumber);
+    printk(KERN_INFO "USB MODULE print_usb_device(): some_usb_device->descriptor.bNumConfigurations = %d\n", some_usb_device->descriptor.bNumConfigurations);
+}
+
 // If usb device inserted.
 static void usb_dev_insert(struct usb_device *dev)
 {   
     add_our_usb_device(dev);
     char *name = knowing_device();
+
+    // print_our_usb_devices();
+
     
     if (name)
     {
@@ -255,6 +279,8 @@ static void usb_dev_remove(struct usb_device *dev)
 // New notify.
 static int notify(struct notifier_block *self, unsigned long action, void *dev)
 {
+    print_usb_device(dev);
+
     // Events, which our notifier react.
     switch (action) {
     case USB_DEVICE_ADD:
@@ -290,3 +316,4 @@ static void __exit my_module_exit(void) {
 
 module_init(my_module_init);
 module_exit(my_module_exit);
+
